@@ -15,6 +15,10 @@ class Scheduler {
       lastRun: null
     });
   }
+
+  removeTask(name) {
+    this.tasks.delete(name);
+  }
 }
 
 module.exports = Scheduler;
