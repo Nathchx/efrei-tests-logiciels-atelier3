@@ -46,4 +46,74 @@ describe('Scheduler', () => {
       expect(scheduler.getTasks()).toEqual(['backup']);
     });
   });
+
+  describe('setTask - définition/modification d\'une tâche planifiée', () => {
+    it('should add a new task with name, periodicity and callback', () => {
+      const periodicity = { shouldRun: jest.fn(() => false) };
+      const callback = jest.fn();
+      
+      scheduler.setTask('backup', periodicity, callback);
+      
+      expect(scheduler.getTasks()).toContain('backup');
+    });
+
+    it('should accept a lambda/arrow function as callback', () => {
+      const periodicity = { shouldRun: jest.fn(() => false) };
+      
+      scheduler.setTask('backup', periodicity, () => console.log('backup'));
+      
+      expect(scheduler.getTasks()).toContain('backup');
+    });
+
+    it('should modify an existing task when using same name', () => {
+      const periodicity1 = { shouldRun: jest.fn(() => false) };
+      const periodicity2 = { shouldRun: jest.fn(() => true) };
+      const callback1 = jest.fn();
+      const callback2 = jest.fn();
+      
+      scheduler.setTask('backup', periodicity1, callback1);
+      scheduler.setTask('backup', periodicity2, callback2);
+      
+      expect(scheduler.getTasks()).toEqual(['backup']);
+      expect(scheduler.getTasks().length).toBe(1);
+    });
+
+    it('should store task with correct name, periodicity and callback', () => {
+      const periodicity = { shouldRun: jest.fn(() => false) };
+      const callback = jest.fn();
+      
+      scheduler.setTask('backup', periodicity, callback);
+      
+      const tasks = scheduler.getTasks();
+      expect(tasks).toHaveLength(1);
+      expect(tasks[0]).toBe('backup');
+    });
+
+    it('should handle multiple different tasks independently', () => {
+      const periodicity1 = { shouldRun: jest.fn(() => false) };
+      const periodicity2 = { shouldRun: jest.fn(() => false) };
+      const callback1 = jest.fn();
+      const callback2 = jest.fn();
+      
+      scheduler.setTask('backup', periodicity1, callback1);
+      scheduler.setTask('cleanup', periodicity2, callback2);
+      
+      const tasks = scheduler.getTasks();
+      expect(tasks).toHaveLength(2);
+      expect(tasks).toContain('backup');
+      expect(tasks).toContain('cleanup');
+    });
+
+    it('should replace callback when modifying existing task', () => {
+      const periodicity = { shouldRun: jest.fn(() => false) };
+      const callback1 = jest.fn();
+      const callback2 = jest.fn();
+      
+      scheduler.setTask('backup', periodicity, callback1);
+      scheduler.setTask('backup', periodicity, callback2);
+      
+      // Seule la deuxième tâche devrait exister
+      expect(scheduler.getTasks()).toEqual(['backup']);
+    });
+  });
 });
