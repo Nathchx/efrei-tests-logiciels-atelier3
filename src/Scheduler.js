@@ -19,6 +19,16 @@ class Scheduler {
   removeTask(name) {
     this.tasks.delete(name);
   }
+
+  update() {
+    const now = this.clock.now();
+    for (const [name, task] of this.tasks.entries()) {
+      if (task.periodicity.shouldRun(task.lastRun, now)) {
+        task.callback();
+        task.lastRun = now;
+      }
+    }
+  }
 }
 
 module.exports = Scheduler;

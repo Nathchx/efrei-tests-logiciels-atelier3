@@ -1,3 +1,5 @@
+const Scheduler = require('../src/Scheduler');
+
 class EveryMinute {
   shouldRun(lastRun, now) {
     if (!lastRun) return true;
